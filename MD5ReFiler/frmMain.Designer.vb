@@ -27,6 +27,7 @@ Partial Class frmMain
     	Me.Progress1 = New System.Windows.Forms.ToolStripProgressBar()
     	Me.toolStrip1 = New System.Windows.Forms.ToolStrip()
     	Me.panel1 = New System.Windows.Forms.Panel()
+    	Me.btnCopyToBuffer = New System.Windows.Forms.Button()
     	Me.button1 = New System.Windows.Forms.Button()
     	Me.FileListView = New System.Windows.Forms.ListView()
     	Me.colFileName = New System.Windows.Forms.ColumnHeader()
@@ -34,7 +35,6 @@ Partial Class frmMain
     	Me.colNewFileName = New System.Windows.Forms.ColumnHeader()
     	Me.backgroundWorker1 = New System.ComponentModel.BackgroundWorker()
     	Me.dsDB = New System.Data.DataSet()
-    	Me.btnCopyToBuffer = New System.Windows.Forms.Button()
     	Me.statusStrip1.SuspendLayout
     	Me.panel1.SuspendLayout
     	CType(Me.dsDB,System.ComponentModel.ISupportInitialize).BeginInit
@@ -45,7 +45,7 @@ Partial Class frmMain
     	Me.statusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.status1, Me.Progress1})
     	Me.statusStrip1.Location = New System.Drawing.Point(0, 397)
     	Me.statusStrip1.Name = "statusStrip1"
-    	Me.statusStrip1.Size = New System.Drawing.Size(809, 22)
+    	Me.statusStrip1.Size = New System.Drawing.Size(1043, 22)
     	Me.statusStrip1.TabIndex = 3
     	Me.statusStrip1.Text = "statusStrip1"
     	'
@@ -63,7 +63,7 @@ Partial Class frmMain
     	'
     	Me.toolStrip1.Location = New System.Drawing.Point(0, 0)
     	Me.toolStrip1.Name = "toolStrip1"
-    	Me.toolStrip1.Size = New System.Drawing.Size(809, 25)
+    	Me.toolStrip1.Size = New System.Drawing.Size(1043, 25)
     	Me.toolStrip1.TabIndex = 4
     	Me.toolStrip1.Text = "toolStrip1"
     	'
@@ -74,13 +74,23 @@ Partial Class frmMain
     	Me.panel1.Dock = System.Windows.Forms.DockStyle.Bottom
     	Me.panel1.Location = New System.Drawing.Point(0, 347)
     	Me.panel1.Name = "panel1"
-    	Me.panel1.Size = New System.Drawing.Size(809, 50)
+    	Me.panel1.Size = New System.Drawing.Size(1043, 50)
     	Me.panel1.TabIndex = 5
+    	'
+    	'btnCopyToBuffer
+    	'
+    	Me.btnCopyToBuffer.Location = New System.Drawing.Point(12, 15)
+    	Me.btnCopyToBuffer.Name = "btnCopyToBuffer"
+    	Me.btnCopyToBuffer.Size = New System.Drawing.Size(75, 23)
+    	Me.btnCopyToBuffer.TabIndex = 2
+    	Me.btnCopyToBuffer.Text = "button2"
+    	Me.btnCopyToBuffer.UseVisualStyleBackColor = true
+    	AddHandler Me.btnCopyToBuffer.Click, AddressOf Me.BtnCopyToBufferClick
     	'
     	'button1
     	'
     	Me.button1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
-    	Me.button1.Location = New System.Drawing.Point(688, 15)
+    	Me.button1.Location = New System.Drawing.Point(922, 15)
     	Me.button1.Name = "button1"
     	Me.button1.Size = New System.Drawing.Size(109, 23)
     	Me.button1.TabIndex = 1
@@ -96,7 +106,7 @@ Partial Class frmMain
     	Me.FileListView.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204,Byte))
     	Me.FileListView.Location = New System.Drawing.Point(0, 25)
     	Me.FileListView.Name = "FileListView"
-    	Me.FileListView.Size = New System.Drawing.Size(809, 322)
+    	Me.FileListView.Size = New System.Drawing.Size(1043, 322)
     	Me.FileListView.TabIndex = 6
     	Me.FileListView.UseCompatibleStateImageBehavior = false
     	Me.FileListView.View = System.Windows.Forms.View.Details
@@ -106,16 +116,17 @@ Partial Class frmMain
     	'colFileName
     	'
     	Me.colFileName.Text = "Имя файла"
-    	Me.colFileName.Width = 340
+    	Me.colFileName.Width = 490
     	'
     	'colMD5
     	'
     	Me.colMD5.Text = "MD5"
-    	Me.colMD5.Width = 180
+    	Me.colMD5.Width = 255
     	'
     	'colNewFileName
     	'
     	Me.colNewFileName.Text = "Новое имя файла"
+    	Me.colNewFileName.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
     	Me.colNewFileName.Width = 245
     	'
     	'backgroundWorker1
@@ -127,21 +138,11 @@ Partial Class frmMain
     	'
     	Me.dsDB.DataSetName = "NewDataSet"
     	'
-    	'btnCopyToBuffer
-    	'
-    	Me.btnCopyToBuffer.Location = New System.Drawing.Point(12, 15)
-    	Me.btnCopyToBuffer.Name = "btnCopyToBuffer"
-    	Me.btnCopyToBuffer.Size = New System.Drawing.Size(75, 23)
-    	Me.btnCopyToBuffer.TabIndex = 2
-    	Me.btnCopyToBuffer.Text = "button2"
-    	Me.btnCopyToBuffer.UseVisualStyleBackColor = true
-    	AddHandler Me.btnCopyToBuffer.Click, AddressOf Me.BtnCopyToBufferClick
-    	'
     	'frmMain
     	'
     	Me.AutoScaleDimensions = New System.Drawing.SizeF(6!, 13!)
     	Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-    	Me.ClientSize = New System.Drawing.Size(809, 419)
+    	Me.ClientSize = New System.Drawing.Size(1043, 419)
     	Me.Controls.Add(Me.FileListView)
     	Me.Controls.Add(Me.panel1)
     	Me.Controls.Add(Me.toolStrip1)
