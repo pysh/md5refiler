@@ -20,3 +20,6 @@ u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\bin\Debug\MD5ReF
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\bin\Debug\MD5ReFiler.exe
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\bin\Debug\MD5ReFiler.pdb
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\bin\Debug\MD5ReFiler.xml
+E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.vbprojResolveAssemblyReference.cache
+E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.frmMain.resources
+E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\bin\Debug\MD5ReFiler.db.xml

@@ -31,9 +31,13 @@ Partial Class frmMain
     	Me.FileListView = New System.Windows.Forms.ListView()
     	Me.colFileName = New System.Windows.Forms.ColumnHeader()
     	Me.colMD5 = New System.Windows.Forms.ColumnHeader()
+    	Me.colNewFileName = New System.Windows.Forms.ColumnHeader()
     	Me.backgroundWorker1 = New System.ComponentModel.BackgroundWorker()
+    	Me.dsDB = New System.Data.DataSet()
+    	Me.btnCopyToBuffer = New System.Windows.Forms.Button()
     	Me.statusStrip1.SuspendLayout
     	Me.panel1.SuspendLayout
+    	CType(Me.dsDB,System.ComponentModel.ISupportInitialize).BeginInit
     	Me.SuspendLayout
     	'
     	'statusStrip1
@@ -65,6 +69,7 @@ Partial Class frmMain
     	'
     	'panel1
     	'
+    	Me.panel1.Controls.Add(Me.btnCopyToBuffer)
     	Me.panel1.Controls.Add(Me.button1)
     	Me.panel1.Dock = System.Windows.Forms.DockStyle.Bottom
     	Me.panel1.Location = New System.Drawing.Point(0, 347)
@@ -86,7 +91,7 @@ Partial Class frmMain
     	'FileListView
     	'
     	Me.FileListView.AllowDrop = true
-    	Me.FileListView.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.colFileName, Me.colMD5})
+    	Me.FileListView.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.colFileName, Me.colMD5, Me.colNewFileName})
     	Me.FileListView.Dock = System.Windows.Forms.DockStyle.Fill
     	Me.FileListView.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204,Byte))
     	Me.FileListView.Location = New System.Drawing.Point(0, 25)
@@ -101,17 +106,36 @@ Partial Class frmMain
     	'colFileName
     	'
     	Me.colFileName.Text = "Имя файла"
-    	Me.colFileName.Width = 589
+    	Me.colFileName.Width = 340
     	'
     	'colMD5
     	'
     	Me.colMD5.Text = "MD5"
-    	Me.colMD5.Width = 216
+    	Me.colMD5.Width = 180
+    	'
+    	'colNewFileName
+    	'
+    	Me.colNewFileName.Text = "Новое имя файла"
+    	Me.colNewFileName.Width = 245
     	'
     	'backgroundWorker1
     	'
     	AddHandler Me.backgroundWorker1.DoWork, AddressOf Me.BackgroundWorker1DoWork
     	AddHandler Me.backgroundWorker1.RunWorkerCompleted, AddressOf Me.BackgroundWorker1RunWorkerCompleted
+    	'
+    	'dsDB
+    	'
+    	Me.dsDB.DataSetName = "NewDataSet"
+    	'
+    	'btnCopyToBuffer
+    	'
+    	Me.btnCopyToBuffer.Location = New System.Drawing.Point(12, 15)
+    	Me.btnCopyToBuffer.Name = "btnCopyToBuffer"
+    	Me.btnCopyToBuffer.Size = New System.Drawing.Size(75, 23)
+    	Me.btnCopyToBuffer.TabIndex = 2
+    	Me.btnCopyToBuffer.Text = "button2"
+    	Me.btnCopyToBuffer.UseVisualStyleBackColor = true
+    	AddHandler Me.btnCopyToBuffer.Click, AddressOf Me.BtnCopyToBufferClick
     	'
     	'frmMain
     	'
@@ -127,9 +151,13 @@ Partial Class frmMain
     	Me.statusStrip1.ResumeLayout(false)
     	Me.statusStrip1.PerformLayout
     	Me.panel1.ResumeLayout(false)
+    	CType(Me.dsDB,System.ComponentModel.ISupportInitialize).EndInit
     	Me.ResumeLayout(false)
     	Me.PerformLayout
     End Sub
+    Private btnCopyToBuffer As System.Windows.Forms.Button
+    Private dsDB As System.Data.DataSet
+    Private colNewFileName As System.Windows.Forms.ColumnHeader
     Private colMD5 As System.Windows.Forms.ColumnHeader
     Private Progress1 As System.Windows.Forms.ToolStripProgressBar
     Private backgroundWorker1 As System.ComponentModel.BackgroundWorker

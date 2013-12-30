@@ -3,15 +3,15 @@ Imports System.IO
 Imports System.Text
 
 Public Class frmMain
-	
+
 	Sub Button1Click(sender As Object, e As EventArgs)
 '		Dim myFile As String = Me.textBox1.Text
 '		Dim dtFrom As Date = Now
 '		Dim myHash As String = GetMD5(myFile)
 '		status1.Text = String.Format("Выполнено за {0}", GetDTInterval(dtFrom, Now))
 '        textBox2.Text = myHash
-		backgroundWorker1.RunWorkerAsync()
-'		CalculateMD5()
+'		backgroundWorker1.RunWorkerAsync()
+		CalculateMD5()
     End Sub
  
     Function GetMD5(ByVal filePath As String)
@@ -158,20 +158,83 @@ Public Class frmMain
 		Dim strFileName As String
 		Dim strMD5 As String
 		Dim lvi As ListViewItem
-		Progress1.Maximum=fileListView.Items.Count
-    	For Each lvi In Me.FileListView.Items
-'    		lvi.SubItems.Clear
-    		For f=1 To lvi.SubItems.Count-1
-				lvi.SubItems.RemoveAt(1)
-			Next
-			strFileName = lvi.Text
-            lvi.EnsureVisible
-            progress1.Value=lvi.Index
-            strMD5 = GetMD5(strFileName)
-            Me.FileListView.BeginUpdate
-            	lvi.SubItems.Add(strMD5)
-            Me.FileListView.EndUpdate
-            Me.Refresh
-        Next
+		If dsDB.ReadXml(IO.Path.ChangeExtension(Application.ExecutablePath, ".db.xml")) Then
+			Debug.WriteLine(dsDB.Tables(0).TableName)
+			Progress1.Maximum=fileListView.Items.Count
+	    	For Each lvi In Me.FileListView.Items
+	'    		lvi.SubItems.Clear
+	    		For f=1 To lvi.SubItems.Count-1
+					lvi.SubItems.RemoveAt(1)
+				Next
+				strFileName = lvi.Text
+	            lvi.EnsureVisible
+	            progress1.Value=lvi.Index
+	            strMD5 = GetMD5(strFileName)
+	            Me.FileListView.BeginUpdate
+	            lvi.SubItems.Add(strMD5)
+	            lvi.SubItems.Add(Join(GetFileNameByMD5(strMD5).ToArray, "/"))
+	            Me.FileListView.EndUpdate
+	            Me.Refresh
+	    	Next
+		End If
 	End Sub
+	
+	Function GetFileNameByMD5(strMD5 As String) As List(Of String)
+		Dim RetVal As New List(Of String)
+		Dim tDef As Data.DataTable = dsDB.Tables("Files")
+		Dim filterExp As String = String.Format("CRC='{0}'", strMD5)
+		Dim drarray() As DataRow
+		Dim i As Integer
+		drarray = tDef.Select(filterExp)
+		For i = 0 To (drarray.Length - 1)
+   			RetVal.Add(drarray(i)("fullName").ToString )
+		Next
+		Return RetVal
+	End Function
+	
+	
+    
+    Sub BtnCopyToBufferClick(sender As Object, e As EventArgs)
+    	SendToClipboard(Me.FileListView)	
+    End Sub
+    
+    Public Sub SendToClipboard (ByVal ListViewObj As ListView)  
+		Dim ListItemObj As ListViewItem ' MSComctlLib.ListItem  
+	  	Dim ListSubItemObj As ListViewItem.ListViewSubItem 'MSComctlLib.ListSubItem  
+	  	'Dim ColumnHeaderObj As  ListViewItem 'MSComctlLib.ColumnHeader  
+	  	Dim ClipboardText As String  
+	  	Dim ClipboardLine As String  
+	  
+	   	ClipboardText=""
+		'  '
+		'  ' копирование заголовков:
+		'  For Each ColumnHeaderObj In _  
+		'      ListViewObj.ColumnHeaders  
+		'    If ColumnHeaderObj.Index = 1 Then  
+		'      ClipboardText = ColumnHeaderObj.Text   
+		'    Else  
+		'      ClipboardText = ClipboardText & _  
+		'         vbTab & ColumnHeaderObj.Text   
+		'    End If
+		'  Next
+	  	' содержимое колонок: 
+	  	For Each ListItemObj In ListViewObj.Items
+	  		'ClipboardText = ClipboardText & IIf(ClipboardText="","", vbCrLf)
+	  		ClipboardLine = "" ' ListItemObj.Text
+	    	' содержимое подчиненных элементов
+'	    	If ListItemObj.Checked Then
+	    		For Each ListSubItemObj In ListItemObj.SubItems
+	    			ClipboardLine = ClipboardLine + IIf(ClipboardLine="","", vbTab) + ListSubItemObj.Text
+	    		Next  
+	    		ClipboardText = ClipBoardText + IIf(ClipBoardText="","", vbCrLf) + ClipboardLine
+'	    	End If
+		Next  
+		If ClipboardText <> "" Then
+			' ClipBoard.Clear()
+			Clipboard.SetText(ClipboardText,TextDataFormat.UnicodeText)
+			MsgBox("Текст скопирован в буфер")
+		Else	
+			MsgBox("Нечего копировать")
+		End If
+	End Sub 
 End Class
