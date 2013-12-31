@@ -27,6 +27,7 @@ Partial Class frmMain
     	Me.Progress1 = New System.Windows.Forms.ToolStripProgressBar()
     	Me.toolStrip1 = New System.Windows.Forms.ToolStrip()
     	Me.panel1 = New System.Windows.Forms.Panel()
+    	Me.btnCancel = New System.Windows.Forms.Button()
     	Me.btnCopyToBuffer = New System.Windows.Forms.Button()
     	Me.button1 = New System.Windows.Forms.Button()
     	Me.FileListView = New System.Windows.Forms.ListView()
@@ -69,6 +70,7 @@ Partial Class frmMain
     	'
     	'panel1
     	'
+    	Me.panel1.Controls.Add(Me.btnCancel)
     	Me.panel1.Controls.Add(Me.btnCopyToBuffer)
     	Me.panel1.Controls.Add(Me.button1)
     	Me.panel1.Dock = System.Windows.Forms.DockStyle.Bottom
@@ -76,6 +78,17 @@ Partial Class frmMain
     	Me.panel1.Name = "panel1"
     	Me.panel1.Size = New System.Drawing.Size(1043, 50)
     	Me.panel1.TabIndex = 5
+    	'
+    	'btnCancel
+    	'
+    	Me.btnCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right),System.Windows.Forms.AnchorStyles)
+    	Me.btnCancel.Location = New System.Drawing.Point(807, 15)
+    	Me.btnCancel.Name = "btnCancel"
+    	Me.btnCancel.Size = New System.Drawing.Size(109, 23)
+    	Me.btnCancel.TabIndex = 3
+    	Me.btnCancel.Text = "Отмена"
+    	Me.btnCancel.UseVisualStyleBackColor = true
+    	AddHandler Me.btnCancel.Click, AddressOf Me.BtnCancelClick
     	'
     	'btnCopyToBuffer
     	'
@@ -101,6 +114,7 @@ Partial Class frmMain
     	'FileListView
     	'
     	Me.FileListView.AllowDrop = true
+    	Me.FileListView.CheckBoxes = true
     	Me.FileListView.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.colFileName, Me.colMD5, Me.colNewFileName})
     	Me.FileListView.Dock = System.Windows.Forms.DockStyle.Fill
     	Me.FileListView.Font = New System.Drawing.Font("Consolas", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(204,Byte))
@@ -156,6 +170,7 @@ Partial Class frmMain
     	Me.ResumeLayout(false)
     	Me.PerformLayout
     End Sub
+    Private btnCancel As System.Windows.Forms.Button
     Private btnCopyToBuffer As System.Windows.Forms.Button
     Private dsDB As System.Data.DataSet
     Private colNewFileName As System.Windows.Forms.ColumnHeader

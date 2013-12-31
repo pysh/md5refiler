@@ -3,7 +3,7 @@ Imports System.IO
 Imports System.Text
 
 Public Class frmMain
-
+	Private boolCancel As Boolean = False
 	Sub Button1Click(sender As Object, e As EventArgs)
 '		Dim myFile As String = Me.textBox1.Text
 '		Dim dtFrom As Date = Now
@@ -141,28 +141,31 @@ Public Class frmMain
     
     
     Sub BackgroundWorker1DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
-    	FileListView.Invoke(New MethodInvoker(AddressOf CalculateMD5))
+'    	FileListView.Invoke(New MethodInvoker(AddressOf CalculateMD5))
     End Sub
     
 	Sub BackgroundWorker1RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs)
-		If (e.Error IsNot Nothing) Then
-			MessageBox.Show(e.Error.Message)
-		ElseIf e.Cancelled Then
-			MessageBox.Show ("Canceled")
-		Else
-			
-		End If
+'		If (e.Error IsNot Nothing) Then
+'			MessageBox.Show(e.Error.Message)
+'		ElseIf e.Cancelled Then
+'			MessageBox.Show ("Canceled")
+'		Else
+'			
+'		End If
 	End Sub
 	
 	Sub CalculateMD5()
 		Dim strFileName As String
+		Dim newFileNames As List(Of String)
 		Dim strMD5 As String
 		Dim lvi As ListViewItem
+		boolCancel = False
 		If dsDB.ReadXml(IO.Path.ChangeExtension(Application.ExecutablePath, ".db.xml")) Then
 			Debug.WriteLine(dsDB.Tables(0).TableName)
 			Progress1.Maximum=fileListView.Items.Count
 	    	For Each lvi In Me.FileListView.Items
-	'    		lvi.SubItems.Clear
+	    		'    		lvi.SubItems.Clear
+	    		If boolCancel Then Exit For
 	    		For f=1 To lvi.SubItems.Count-1
 					lvi.SubItems.RemoveAt(1)
 				Next
@@ -170,11 +173,14 @@ Public Class frmMain
 	            lvi.EnsureVisible
 	            progress1.Value=lvi.Index
 	            strMD5 = GetMD5(strFileName)
+	            newFileNames = GetFileNameByMD5(strMD5)
 	            Me.FileListView.BeginUpdate
 	            lvi.SubItems.Add(strMD5)
-	            lvi.SubItems.Add(Join(GetFileNameByMD5(strMD5).ToArray, "/"))
+	            lvi.SubItems.Add(Join(newFileNames.ToArray, "/"))
 	            Me.FileListView.EndUpdate
-	            Me.Refresh
+	            MoveFiles(strFileName, newFileNames)
+	            Me.FileListView.Refresh
+	            If boolCancel Then Exit For
 	    	Next
 		End If
 	End Sub
@@ -192,7 +198,26 @@ Public Class frmMain
 		Return RetVal
 	End Function
 	
-	
+	Sub MoveFiles(strSourceFileName As String, destFileNames As List(Of String))
+		Dim strDestFolderName As String
+		Dim strDestFileName As String
+		Dim strDestShortFileName As String
+		Dim strDestFileExtension As String
+		For Each strDestFullFileName In destFileNames
+			strDestFolderName = IO.Path.GetDirectoryName(strDestFullFileName)
+			strDestFileName = IO.Path.GetFileName(strDestFullFileName)
+			strDestShortFileName = IO.Path.GetFileNameWithoutExtension(strDestFullFileName)
+			strDestFileExtension = IO.Path.GetExtension(strDestFullFileName)
+			' strDestFileNameReplace =  IO.Path.Combine(strDestFolderName,strDestShortFileName & String.Format("{0:yyyyMMdd-hhmmss}", Date.Now) & strDestFileExtension)
+			If IO.File.Exists(strDestFullFileName) Then
+				My.Application.Log.WriteEntry(string.Format("MoveWithBackup '{0}', '{1}', '{2}'", strSourceFileName, strDestFullFileName, strDestFullFileName & ".bak")) 
+				IO.File.Replace(strSourceFileName, strDestFullFileName, strDestFullFileName & ".bak")
+			Else
+				My.Application.Log.WriteEntry(string.Format("Move '{0}', '{1}'", strSourceFileName, strDestFullFileName))
+				IO.File.Move(strSourceFileName, strDestFullFileName)
+			End If
+		Next
+	End Sub
     
     Sub BtnCopyToBufferClick(sender As Object, e As EventArgs)
     	SendToClipboard(Me.FileListView)	
@@ -201,33 +226,25 @@ Public Class frmMain
     Public Sub SendToClipboard (ByVal ListViewObj As ListView)  
 		Dim ListItemObj As ListViewItem ' MSComctlLib.ListItem  
 	  	Dim ListSubItemObj As ListViewItem.ListViewSubItem 'MSComctlLib.ListSubItem  
-	  	'Dim ColumnHeaderObj As  ListViewItem 'MSComctlLib.ColumnHeader  
+	  	Dim col As DataColumn  
 	  	Dim ClipboardText As String  
 	  	Dim ClipboardLine As String  
-	  
 	   	ClipboardText=""
-		'  '
-		'  ' копирование заголовков:
-		'  For Each ColumnHeaderObj In _  
-		'      ListViewObj.ColumnHeaders  
-		'    If ColumnHeaderObj.Index = 1 Then  
-		'      ClipboardText = ColumnHeaderObj.Text   
-		'    Else  
-		'      ClipboardText = ClipboardText & _  
-		'         vbTab & ColumnHeaderObj.Text   
-		'    End If
-		'  Next
-	  	' содержимое колонок: 
+		' копирование заголовков:
+		For Each col In ListViewObj.Columns
+			ClipboardText = IIf(ClipboardText="","", vbTab) & col.ColumnName
+		Next
+
 	  	For Each ListItemObj In ListViewObj.Items
 	  		'ClipboardText = ClipboardText & IIf(ClipboardText="","", vbCrLf)
 	  		ClipboardLine = "" ' ListItemObj.Text
 	    	' содержимое подчиненных элементов
-'	    	If ListItemObj.Checked Then
+	    	If ListItemObj.Checked Then
 	    		For Each ListSubItemObj In ListItemObj.SubItems
 	    			ClipboardLine = ClipboardLine + IIf(ClipboardLine="","", vbTab) + ListSubItemObj.Text
 	    		Next  
 	    		ClipboardText = ClipBoardText + IIf(ClipBoardText="","", vbCrLf) + ClipboardLine
-'	    	End If
+	    	End If
 		Next  
 		If ClipboardText <> "" Then
 			' ClipBoard.Clear()
@@ -236,5 +253,15 @@ Public Class frmMain
 		Else	
 			MsgBox("Нечего копировать")
 		End If
-	End Sub 
+    End Sub
+    
+    Private Sub CreateDirectoryRecursive(strDirectoryName As String)
+        Dim pfn As String = IO.Path.GetDirectoryName(strDirectoryName)
+        If Not IO.Directory.Exists(pfn) Then CreateDirectoryRecursive(pfn)
+        IO.Directory.CreateDirectory(strDirectoryName)
+    End Sub
+    
+    Sub BtnCancelClick(sender As Object, e As EventArgs)
+    	
+    End Sub
 End Class
