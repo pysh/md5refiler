@@ -2,11 +2,9 @@ E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\MD5ReFiler\bin\Debug\MD5ReFiler.exe.co
 E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\bin\Debug\MD5ReFiler.exe.config
 E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\bin\Debug\MD5ReFiler.exe
 E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\bin\Debug\MD5ReFiler.pdb
-E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\bin\Debug\MD5ReFiler.xml
 E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.Resources.resources
 E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.vbproj.GenerateResource.Cache
 E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.exe
-E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.xml
 E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.pdb
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\obj\Debug\ResolveAssemblyReference.cache
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\obj\Debug\MD5ReFiler.frmMain.resources
@@ -24,3 +22,5 @@ E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\bin\Debug\MD5ReFiler.db.xml
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\bin\Debug\MD5ReFiler.db.xml
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\bin\Debug\MD5ReFiler.doc.xml
 u:\My Documents\SharpDevelop Projects\svn\MD5ReFiler\MD5ReFiler\obj\Debug\MD5ReFiler.doc.xml
+E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\bin\Debug\MD5ReFiler.doc.xml
+E:\SkyDrive\Sources\MD5Refiler\MD5ReFiler\obj\Debug\MD5ReFiler.doc.xml

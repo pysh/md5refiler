@@ -36,6 +36,7 @@ Partial Class frmMain
     	Me.colNewFileName = New System.Windows.Forms.ColumnHeader()
     	Me.backgroundWorker1 = New System.ComponentModel.BackgroundWorker()
     	Me.dsDB = New System.Data.DataSet()
+    	Me.btnClearList = New System.Windows.Forms.Button()
     	Me.statusStrip1.SuspendLayout
     	Me.panel1.SuspendLayout
     	CType(Me.dsDB,System.ComponentModel.ISupportInitialize).BeginInit
@@ -70,6 +71,7 @@ Partial Class frmMain
     	'
     	'panel1
     	'
+    	Me.panel1.Controls.Add(Me.btnClearList)
     	Me.panel1.Controls.Add(Me.btnCancel)
     	Me.panel1.Controls.Add(Me.btnCopyToBuffer)
     	Me.panel1.Controls.Add(Me.button1)
@@ -94,9 +96,9 @@ Partial Class frmMain
     	'
     	Me.btnCopyToBuffer.Location = New System.Drawing.Point(12, 15)
     	Me.btnCopyToBuffer.Name = "btnCopyToBuffer"
-    	Me.btnCopyToBuffer.Size = New System.Drawing.Size(75, 23)
+    	Me.btnCopyToBuffer.Size = New System.Drawing.Size(171, 23)
     	Me.btnCopyToBuffer.TabIndex = 2
-    	Me.btnCopyToBuffer.Text = "button2"
+    	Me.btnCopyToBuffer.Text = "Скопировать список в буфер"
     	Me.btnCopyToBuffer.UseVisualStyleBackColor = true
     	AddHandler Me.btnCopyToBuffer.Click, AddressOf Me.BtnCopyToBufferClick
     	'
@@ -152,6 +154,16 @@ Partial Class frmMain
     	'
     	Me.dsDB.DataSetName = "NewDataSet"
     	'
+    	'btnClearList
+    	'
+    	Me.btnClearList.Location = New System.Drawing.Point(221, 15)
+    	Me.btnClearList.Name = "btnClearList"
+    	Me.btnClearList.Size = New System.Drawing.Size(105, 23)
+    	Me.btnClearList.TabIndex = 4
+    	Me.btnClearList.Text = "Очистить список"
+    	Me.btnClearList.UseVisualStyleBackColor = true
+    	AddHandler Me.btnClearList.Click, AddressOf Me.BtnClearListClick
+    	'
     	'frmMain
     	'
     	Me.AutoScaleDimensions = New System.Drawing.SizeF(6!, 13!)
@@ -170,6 +182,7 @@ Partial Class frmMain
     	Me.ResumeLayout(false)
     	Me.PerformLayout
     End Sub
+    Private btnClearList As System.Windows.Forms.Button
     Private btnCancel As System.Windows.Forms.Button
     Private btnCopyToBuffer As System.Windows.Forms.Button
     Private dsDB As System.Data.DataSet

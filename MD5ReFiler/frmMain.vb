@@ -1,9 +1,12 @@
 ﻿Imports System.Security.Cryptography
 Imports System.IO
 Imports System.Text
+Imports System.Threading
 
 Public Class frmMain
 	Private boolCancel As Boolean = False
+
+	
 	Sub Button1Click(sender As Object, e As EventArgs)
 '		Dim myFile As String = Me.textBox1.Text
 '		Dim dtFrom As Date = Now
@@ -11,16 +14,19 @@ Public Class frmMain
 '		status1.Text = String.Format("Выполнено за {0}", GetDTInterval(dtFrom, Now))
 '        textBox2.Text = myHash
 '		backgroundWorker1.RunWorkerAsync()
-		CalculateMD5()
+'		CalculateMD5()
+		Dim thrdCalculate As New Thread(New ThreadStart(AddressOf CalculateMD5))
+		thrdCalculate.Start
     End Sub
  
     Function GetMD5(ByVal filePath As String)
         Dim md5 As MD5CryptoServiceProvider = New MD5CryptoServiceProvider
-        Dim f As FileStream = New FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192)
- 
-        f = New FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192)
-        md5.ComputeHash(f)
-        f.Close()
+        ' Dim f As FileStream = New FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 8192)
+ 		
+        Using f As New FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 65536)
+        	md5.ComputeHash(f)
+        End Using
+        
  
         Dim hash As Byte() = md5.Hash
         Dim buff As StringBuilder = New StringBuilder
@@ -82,7 +88,8 @@ Public Class frmMain
         Dim lvi as System.Windows.Forms.ListViewItem
         ' Simply add the file to the listbox.
         lvi = Me.FileListView.Items.Add(FilePath)
-        ' lvi.StateImageIndex=0
+		lvi.Checked = True        
+'        lvi.StateImageIndex=0
     End Sub    
     
 	Private Sub FindFiles(ByVal Directory As String)
@@ -141,24 +148,27 @@ Public Class frmMain
     
     
     Sub BackgroundWorker1DoWork(sender As Object, e As System.ComponentModel.DoWorkEventArgs)
-'    	FileListView.Invoke(New MethodInvoker(AddressOf CalculateMD5))
+    	FileListView.Invoke(New MethodInvoker(AddressOf CalculateMD5))
     End Sub
     
 	Sub BackgroundWorker1RunWorkerCompleted(sender As Object, e As System.ComponentModel.RunWorkerCompletedEventArgs)
-'		If (e.Error IsNot Nothing) Then
-'			MessageBox.Show(e.Error.Message)
-'		ElseIf e.Cancelled Then
-'			MessageBox.Show ("Canceled")
-'		Else
-'			
-'		End If
+		If (e.Error IsNot Nothing) Then
+			MessageBox.Show(e.Error.Message)
+		ElseIf e.Cancelled Then
+			MessageBox.Show ("Canceled")
+		Else
+			
+		End If
 	End Sub
 	
 	Sub CalculateMD5()
 		Dim strFileName As String
 		Dim newFileNames As List(Of String)
+		Dim strBadFilePath As String
+		Dim strBadFileName As String
 		Dim strMD5 As String
 		Dim lvi As ListViewItem
+		Dim bf As New List(Of String)
 		boolCancel = False
 		If dsDB.ReadXml(IO.Path.ChangeExtension(Application.ExecutablePath, ".db.xml")) Then
 			Debug.WriteLine(dsDB.Tables(0).TableName)
@@ -174,12 +184,20 @@ Public Class frmMain
 	            progress1.Value=lvi.Index
 	            strMD5 = GetMD5(strFileName)
 	            newFileNames = GetFileNameByMD5(strMD5)
-	            Me.FileListView.BeginUpdate
+	            'Me.FileListView.BeginUpdate
 	            lvi.SubItems.Add(strMD5)
-	            lvi.SubItems.Add(Join(newFileNames.ToArray, "/"))
-	            Me.FileListView.EndUpdate
-	            MoveFiles(strFileName, newFileNames)
-	            Me.FileListView.Refresh
+	            If newFileNames.Count > 0 Then
+	            	lvi.SubItems.Add(Join(newFileNames.ToArray, "/"))
+	            	MoveFiles(strFileName, newFileNames)
+	            Else
+	            	strBadFilePath = IO.Path.Combine(IO.Path.Combine(IO.Path.GetDirectoryName(strFileName), "_NA_"))
+	            	strBadFileName = String.Format("{0}.{1}{2}", IO.Path.GetFileNameWithoutExtension(strFileName), strMD5, IO.Path.GetExtension(strFileName))
+	            	If not IO.Directory.Exists(strBadFilePath) Then CreateDirectoryRecursive(strBadFilePath)
+	            		bf.Clear
+	            		bf.Add(IO.Path.Combine(strBadFilePath, strBadFileName))
+	            		MoveFiles(strFileName,bf)
+	            End If
+	            'Me.FileListView.EndUpdate
 	            If boolCancel Then Exit For
 	    	Next
 		End If
@@ -203,6 +221,8 @@ Public Class frmMain
 		Dim strDestFileName As String
 		Dim strDestShortFileName As String
 		Dim strDestFileExtension As String
+		Dim strOldFileName As String
+		
 		For Each strDestFullFileName In destFileNames
 			strDestFolderName = IO.Path.GetDirectoryName(strDestFullFileName)
 			strDestFileName = IO.Path.GetFileName(strDestFullFileName)
@@ -210,13 +230,25 @@ Public Class frmMain
 			strDestFileExtension = IO.Path.GetExtension(strDestFullFileName)
 			' strDestFileNameReplace =  IO.Path.Combine(strDestFolderName,strDestShortFileName & String.Format("{0:yyyyMMdd-hhmmss}", Date.Now) & strDestFileExtension)
 			If IO.File.Exists(strDestFullFileName) Then
-				My.Application.Log.WriteEntry(string.Format("MoveWithBackup '{0}', '{1}', '{2}'", strSourceFileName, strDestFullFileName, strDestFullFileName & ".bak")) 
-				IO.File.Replace(strSourceFileName, strDestFullFileName, strDestFullFileName & ".bak")
-			Else
-				My.Application.Log.WriteEntry(string.Format("Move '{0}', '{1}'", strSourceFileName, strDestFullFileName))
+				strOldFileName = strDestFullFileName & ".bak" & String.Format("{0:yyyyMMdd-hhmmss-fffffff}", Date.Now)
+				My.Application.Log.WriteEntry(String.Format("Rename '{0}', '{1}'", strDestFullFileName, strOldFileName), TraceEventType.Information)
+				IO.File.Move(strDestFullFileName, strOldFileName)
+				Application.DoEvents
+			End If
+			' Debug.WriteLine(strDestFullFileName)
+			If not IO.Directory.Exists(strDestFolderName) Then CreateDirectoryRecursive(strDestFolderName)
+			If destFileNames.Count=1 Or strDestFullFileName = destFileNames.Last Then
+				My.Application.Log.WriteEntry(String.Format("Move '{0}', '{1}'", strSourceFileName, strDestFullFileName), TraceEventType.Information)
 				IO.File.Move(strSourceFileName, strDestFullFileName)
+				Application.DoEvents
+			Else
+				My.Application.Log.WriteEntry(String.Format("Copy '{0}', '{1}'", strSourceFileName, strDestFullFileName), TraceEventType.Information)
+				IO.File.Copy(strSourceFileName, strDestFullFileName)
+				Application.DoEvents
 			End If
 		Next
+		 
+		
 	End Sub
     
     Sub BtnCopyToBufferClick(sender As Object, e As EventArgs)
@@ -263,5 +295,9 @@ Public Class frmMain
     
     Sub BtnCancelClick(sender As Object, e As EventArgs)
     	
+    End Sub
+    
+    Sub BtnClearListClick(sender As Object, e As EventArgs)
+		FileListView.Items.Clear    	
     End Sub
 End Class
